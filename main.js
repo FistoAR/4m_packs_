@@ -8,30 +8,35 @@ const categories = [
         capacity: "50ml Hinged Container",
         src: "./assets/glb/round/50ml_hinged_container.glb",
         img: "./container_images/50 hinged container n.webp",
+        type: "round",
       },
       {
         name: "4MP-R-120",
         capacity: "120ml Round Container",
         src: "./assets/glb/round/120ml_round.glb",
         img: "./container_images/120 hinged container n.webp",
+        type: "round",
       },
       {
         name: "4MP-R-250",
         capacity: "250ml Round Container",
         src: "./assets/glb/round/250ml_round.glb",
         img: "./container_images/250ml n1.webp",
+        type: "round",
       },
       {
         name: "4MP-R-500",
         capacity: "500ml Round Container",
         src: "./assets/glb/round/500ml_round.glb",
         img: "./container_images/4.500ml container.webp",
+        type: "round",
       },
       {
         name: "4MP-R-750",
         capacity: "750ml Round Container",
         src: "./assets/glb/round/750ml_round.glb",
         img: "./container_images/5.750ml container n2.webp",
+        type: "round",
       },
     ],
   },
@@ -43,18 +48,21 @@ const categories = [
         capacity: "500ml Tamper Evident Rectangular Container",
         src: "./assets/glb/rectangle/500_rectangle.glb",
         img: "./container_images/6 - 500ml Tamper Evident Rectangular Container.webp",
+        type: "rectangle",
       },
       {
         name: "4MP-TER-750",
         capacity: "750ml Tamper Evident Rectangular Container",
         src: "./assets/glb/rectangle/750_rectangle.glb",
         img: "./container_images/7 - 750ml Tamper Evident Rectangular Container.webp",
+        type: "rectangle",
       },
       {
         name: "4MP-TER-1000",
         capacity: "1000ml Tamper Evident Rectangular Container",
         src: "./assets/glb/rectangle/1000_rectangle.glb",
         img: "./container_images/8 - 1000ml Tamper Evident Rectangular Container.webp",
+        type: "rectangle",
       },
     ],
   },
@@ -66,36 +74,42 @@ const categories = [
         capacity: "120ml  Dessert cup",
         src: "./Model/120ml_dessert_cup.glb",
         img: "./container_images/sipper_models/120_dessert_cup.webp",
+        type: "sipper",
       },
       {
         name: "4MP-G-250",
         capacity: "250ml Glass",
         src: "./Model/250ml_glass.glb",
         img: "./container_images/sipper_models/250ml_glass.webp",
+        type: "sipper",
       },
       {
         name: "4MP-SG-250",
         capacity: "250ml Sipper glass",
         src: "./Model/250_Sipper_glass.glb",
         img: "./container_images/sipper_models/250ml_sipper_glass.webp",
+        type: "sipper",
       },
       {
         name: "4MP-GF-250",
         capacity: "250ml Glass with flat lid",
         src: "./Model/250_glasswith_flat_lid.glb",
         img: "./container_images/sipper_models/250ml_glass_with_flat_lid.webp",
+        type: "sipper",
       },
       {
         name: "4MP-G-350",
         capacity: "350ml Glass",
         src: "./Model/350ml_glass.glb",
         img: "./container_images/sipper_models/350ml_glass.webp",
+        type: "sipper",
       },
       {
         name: "4MP-SG-350",
         capacity: "350ml Sipper glass",
         src: "./Model/350_sipper_glass.glb",
         img: "./container_images/sipper_models/350ml_sipper_glass.webp",
+        type: "sipper",
       },
     ],
   },
@@ -572,6 +586,8 @@ function selectPattern(patternIndex) {
 async function applyPatternToModel() {
   const modelViewer = document.querySelector("model-viewer");
   if (!modelViewer) return;
+  console.log("Current pattern texture: ", currentPatternTexture);
+  if (currentPatternTexture == null || currentPatternTexture == undefined) {return;}
 
   // await modelViewer.model.updateComplete;
 
@@ -596,6 +612,57 @@ async function applyPatternToModel() {
 
   // Force refresh
   modelViewer.requestUpdate();
+}
+
+async function applyNoFill() {
+   const modelViewer = document.querySelector("model-viewer");
+  if (!modelViewer) return;
+
+  // Wait for model to be fully loaded
+  // await modelViewer.model?.updateComplete;
+
+  const materials = modelViewer.model.materials;
+
+  // Find the label material
+  const labelMat = materials.find((m) =>
+    m.name.toLowerCase().includes("texture_area")
+  );
+
+  if (!labelMat) {
+    console.warn("⚠ No 'label' material found");
+    return;
+  }
+
+  labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+
+  labelMat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 0]); // RGBA: white + 0 alpha
+
+  labelMat.alphaMode = 'BLEND';
+  
+  const labelUnderMat = materials.find((m) =>
+    m.name.toLowerCase().includes("texture_under")
+  );
+
+  console.log("All material names:");
+materials.forEach(m => console.log(m.name));
+
+
+  if (!labelUnderMat) {
+    console.warn("⚠ No 'texture_under' material found");
+    return;
+  }
+
+  labelUnderMat.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+
+  labelUnderMat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 0]); // RGBA: white + 0 alpha
+
+  labelUnderMat.alphaMode = 'BLEND';
+
+  console.log("No fill is applied to the texture under material");
+
+  // Force model-viewer to re-render
+  modelViewer.requestUpdate();
+
 }
 
 // Function to apply texture to a specific mesh
@@ -660,7 +727,22 @@ function applyTextureToMesh(mesh) {
 // Updated selectModel function - REPLACE your existing one
 function selectModel(modelIndex) {
   selectedModel = modelIndex;
+  
   const model = categories[currentCategory].models[modelIndex];
+  
+  let camera_orbit = '';
+  if (model.type == "round" && modelIndex == 0) {
+    camera_orbit = `camera-orbit="-1263deg 53.54deg 0.1261m"`;
+  }
+  else if (model.type == "rectangle" && modelIndex == 0) {
+    camera_orbit = `camera-orbit="-1443deg 53.14deg 0.4303m"`;
+  }
+  else if (model.type == "sipper" && modelIndex == 0) {
+    camera_orbit = `camera-orbit="-1619deg 74.82deg 0.2274m"`;
+  }
+  else {
+    camera_orbit = ''
+  }
 
   // Update selected model in grid
   document.querySelectorAll(".model-item").forEach((item, index) => {
@@ -680,6 +762,7 @@ function selectModel(modelIndex) {
         camera-controls 
         style="width: 100%; height: 100%;"
         id="viewer" disable-tap disable-pan
+        ${camera_orbit}
         >
     </model-viewer>`;
 
@@ -743,17 +826,17 @@ const patternConfigs = {
   0: {
     // Round Container
     textures: [
-      "./50-ml/50ml-G.png",
-      "./50-ml/50ml-R.png",
-      "./50-ml/50ml-Y.png",
+      "./assets/images/pattern_images/round_green.png",
+      "./assets/images/pattern_images/round_brown.png",
+      "./assets/images/pattern_images/round_mix.png",
     ],
   },
   1: {
     // Tamper Evident Rectangular
     textures: [
-      "./50-ml/rectangle-green.png",
-      "./50-ml/rectangle-red.png",
-      "./50-ml/rectangle-yellow.png",
+      "./assets/images/pattern_images/rectangle_green.png",
+      "./assets/images/pattern_images/rectangle_brown.png",
+      "./assets/images/pattern_images/rectangle_mix.png",
     ],
   },
   2: {
@@ -770,10 +853,13 @@ let currentPatternTexture = patternConfigs[0].textures[0];
 function updatePatternGrid() {
   const patternGrid = document.querySelector(".pattern-grid");
   const currentPatterns = patternConfigs[currentCategory].textures;
+  const customizeButton = document.getElementById('editCustomiseButton');
 
   // Clear existing patterns
   patternGrid.innerHTML = "";
 
+  const noFillImage = (currentCategory === 0) ? 'no_fill_circle.png' : 'no_fill_rectangle.png';
+  (currentCategory === 2) ? customizeButton.style.display = 'none' : customizeButton.style.display = 'unset';
   // Add patterns for current category
   currentPatterns.forEach((textureUrl, index) => {
     const patternItem = document.createElement("div");
@@ -784,9 +870,10 @@ function updatePatternGrid() {
 
     // Apply custom size only for Tamper Evident Rectangular (category 1)
     if (currentCategory === 1) {
-      patternItem.style.width = "106px";
-      patternItem.style.height = "71px";
+      patternItem.style.width = "85px";
+      patternItem.style.height = "55px";
     }
+
 
     patternItem.onclick = () => selectPattern(index);
 
@@ -798,6 +885,31 @@ function updatePatternGrid() {
     selectedPattern = 0;
     currentPatternTexture = currentPatterns[0];
   }
+
+  const plainPattern = document.createElement("div");
+  plainPattern.className = `pattern-item`;
+  plainPattern.style.background = `white url(./assets/images/pattern_images/${noFillImage})`;
+  plainPattern.style.backgroundSize = "cover";
+  plainPattern.style.backgroundRepeat = "repeat";
+
+   if (currentCategory === 1) {
+    plainPattern.style.width = "85px";
+    plainPattern.style.height = "55px";
+  }
+  const plainIndex = currentPatterns.length;
+
+
+  plainPattern.onclick = () => {
+    selectPattern(plainIndex);
+    setModelPlain();
+  }
+  patternGrid.appendChild(plainPattern);
+
+}
+
+function setModelPlain() {
+  console.log("Making the model plain");
+  applyNoFill();
 }
 
 // Modified selectPattern function

@@ -168,7 +168,7 @@ class CustomTextManager {
         const textarea = document.getElementById('customTextArea');
         textarea.value = '';
         textarea.focus();
-        document.getElementById('customTextFont-family').value = props.fontFamily;
+        // document.getElementById('customTextFont-family').value = props.fontFamily;
         document.getElementById('customTextFont-style').value = props.fontStyle;
         document.getElementById('customTextFontSize').value = props.fontSize;
         document.getElementById('customTextColor').value = props.color;

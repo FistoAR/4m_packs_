@@ -28,16 +28,20 @@ createTemplates(chosenModel);
 
 function createTemplates(chosenModel) {
     templateContainer.innerHTML = `
-        <img src="./assets/images/pattern_images/${chosenModel}_green.png" alt="template1" title="template1"
-            loading="eager" width="5%" height="auto" class="template-image" id="template1"
+        <img src="./assets/images/images/default_${chosenModel}.png" alt="template1" title="template1"
+            loading="eager" width="5%" height="auto" class="template-image selected" id="template1"
+            template-no=1 data-theme="black">
+     
+            <img src="./assets/images/pattern_images/${chosenModel}_green.png" alt="template2" title="template2"
+            loading="eager" width="5%" height="auto" class="template-image" id="template2"
             template-no=1 data-theme="white">
 
-        <img src="./assets/images/pattern_images/${chosenModel}_brown.png" alt="template2" title="template2"
-            loading="eager" width="5%" height="auto" class="template-image" id="template2"
+        <img src="./assets/images/pattern_images/${chosenModel}_brown.png" alt="template3" title="template3"
+            loading="eager" width="5%" height="auto" class="template-image" id="template3"
             template-no=2 data-theme="white">
 
-        <img src="./assets/images/pattern_images/${chosenModel}_mix.png" alt="template3" title="template3"
-            loading="eager" width="5%" height="auto" class="template-image" id="template3"
+        <img src="./assets/images/pattern_images/${chosenModel}_mix.png" alt="template4" title="template4"
+            loading="eager" width="5%" height="auto" class="template-image" id="template4"
             template-no=3 data-theme="black">
     `;
 }
@@ -4454,4 +4458,17 @@ document.addEventListener("keydown", function (e) {
       canvas.requestRenderAll();
     }
   }
+});
+
+
+const navBackButton = document.getElementById("navBackButton");
+navBackButton.addEventListener("click", ()=>{
+  window.close();
+
+  // If window is not closed, redirect to index.html after a short delay
+  setTimeout(() => {
+    if (!window.closed) {
+      window.location.replace('index.html');
+    }
+  }, 100);
 });

@@ -22,7 +22,7 @@
 
 
             <!-- <button class="edit-btn" onclick="editModel()">Edit</button> -->
-            <button class="edit-btn" onclick="editModel()">Customize your label</button>
+            <button class="edit-btn" id="editCustomiseButton" onclick="editModel()">Customize your label</button>
             <button class="export-btn" onclick="toggleDropdown()">Export</button>
             <div id="exportDropdown" class="dropdown-content">
                 <a onclick="downloadGLB()">Download GLB</a>
@@ -81,31 +81,21 @@
                 <div class="patterns-section">
                     <div class="patterns-title">Default Patterns</div>
                     <div class="pattern-grid">
+                        <!-- image is generated in js - main.js -->
                         <div class="pattern-item pattern-1" onclick="selectPattern(0)"></div>
                         <div class="pattern-item pattern-2" onclick="selectPattern(1)"></div>
                         <div class="pattern-item pattern-3" onclick="selectPattern(2)"></div>
-                        <!-- <div class="pattern-item" onclick="selectPattern(3)"></div>
-                <div class="pattern-item" onclick="selectPattern(4)"></div>
-                <div class="pattern-item" onclick="selectPattern(5)"></div>
-                <div class="pattern-item" onclick="selectPattern(6)"></div>
-                <div class="pattern-item" onclick="selectPattern(7)"></div>
-                <div class="pattern-item" onclick="selectPattern(8)"></div> -->
+                        
                     </div>
                     <button class="edit-btn" onclick="" id="uploadLogoButton">Upload your logo</button>
                     <input type="file" id="logoFileInput" accept="image/*" style="display: none;">
 
-                    <!-- Pattern Import Section -->
-                    <!-- <div class="pattern-import">
-                <input type="file" id="patternImport" accept="image/*" onchange="handlePatternImport(event)">
-                <label for="patternImport">Import Pattern<br><small>Click to select image</small></label>
-            </div> -->
 
-                    <!-- <button class="edit-btn" onclick="editModel()">Edit</button> -->
                 </div>
                 <div class="model-viewer">
                     <div class="model-placeholder" id="modelPlaceholder">
                         <model-viewer src="./assets/glb/round/50ml_hinged_container.glb"
-                            alt="Container Model" auto-rotate camera-controls style="width: 100%; height: 100%;"
+                            alt="Container Model" auto-rotate camera-controls style="width: 100%; height: 100%;" camera-orbit="-1263deg 53.54deg 0.1261m"
                             id="viewer" disable-tap disable-pan>
                         </model-viewer>
                     </div>
