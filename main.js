@@ -159,8 +159,9 @@ function loadModels() {
 
   categories[currentCategory].models.forEach((model, index) => {
     const modelElement = document.createElement("div");
-    modelElement.className = `model-item ${index === selectedModel ? "selected" : ""
-      }`;
+    modelElement.className = `model-item ${
+      index === selectedModel ? "selected" : ""
+    }`;
     modelElement.onclick = () => selectModel(index);
 
     modelElement.innerHTML = `
@@ -320,18 +321,14 @@ window.addEventListener("message", (event) => {
   const dataURL = event.data;
 
   if (typeof dataURL === "string" && dataURL.startsWith("data:image/png")) {
-      
-
     applyTextureBase64(dataURL);
   }
 });
 
 async function applyTextureBase64(base64Image) {
- 
- 
   const modelViewer = document.getElementById("viewer");
 
- switchModel(modelViewer);
+  switchModel(modelViewer);
 
   // Wait for update cycle
   await modelViewer.updateComplete;
@@ -341,60 +338,67 @@ async function applyTextureBase64(base64Image) {
     if (modelViewer.model) {
       resolve();
     } else {
-      modelViewer.addEventListener('load', () => {
-        
-        resolve();
-      }, { once: true });
+      modelViewer.addEventListener(
+        "load",
+        () => {
+          resolve();
+        },
+        { once: true }
+      );
     }
   });
 
-  modelViewer.addEventListener('load', async () => {
-
+  modelViewer.addEventListener("load", async () => {
+    console.log("Model viewer srouce: ", modelViewer.src);
+    if (!modelViewer.src.includes("without_logo")) return;
     const materials = modelViewer.model.materials;
-  
+
     // Find the material named "texture_area" (case-insensitive search)
-    const labelMat = materials.find(m => m.name.toLowerCase().includes("texture_area"));
-  
+    const labelMat = materials.find((m) =>
+      m.name.toLowerCase().includes("texture_area")
+    );
+
     if (!labelMat) {
       console.warn("⚠ No 'texture_area' material found");
       return;
     }
-  
+
     console.log("Applying pattern:", base64Image);
-  
+
     // Use model-viewer's built-in texture loader
     const tex = await modelViewer.createTexture(base64Image);
-  
+
     // Apply the texture to the material's baseColorTexture
     labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
-  
+
     // Force a refresh for the changes to take effect
     modelViewer.requestUpdate();
   });
 
   // re trigger same for already loaded models
-  
-    const materials = modelViewer.model.materials;
-  
-    // Find the material named "texture_area" (case-insensitive search)
-    const labelMat = materials.find(m => m.name.toLowerCase().includes("texture_area"));
-  
-    if (!labelMat) {
-      console.warn("⚠ No 'texture_area' material found");
-      return;
-    }
-  
-    console.log("Applying pattern:", base64Image);
-  
-    // Use model-viewer's built-in texture loader
-    const tex = await modelViewer.createTexture(base64Image);
-  
-    // Apply the texture to the material's baseColorTexture
-    labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
-  
-    // Force a refresh for the changes to take effect
-    modelViewer.requestUpdate();
 
+  const materials = modelViewer.model.materials;
+
+  // Find the material named "texture_area" (case-insensitive search)
+  const labelMat = materials.find((m) =>
+    m.name.toLowerCase().includes("texture_area")
+  );
+
+  if (!labelMat) {
+    console.warn("⚠ No 'texture_area' material found");
+    return;
+  }
+
+  console.log("Applying pattern:", base64Image);
+
+  // Use model-viewer's built-in texture loader
+  const tex = await modelViewer.createTexture(base64Image);
+
+  // Apply the texture to the material's baseColorTexture
+  labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
+
+  // Force a refresh for the changes to take effect
+  modelViewer.requestUpdate();
 }
 
 function switchModel(modelViewer) {
@@ -406,7 +410,10 @@ function switchModel(modelViewer) {
   if (currentSrc.includes("without_logo")) return;
 
   // Use regex to insert '/without_logo' before 'round/' or 'rectangle/'
-  const newSrc = currentSrc.replace(/(glb\/)(round|rectangle)\//, 'glb/without_logo/$2/');
+  const newSrc = currentSrc.replace(
+    /(glb\/)(round|rectangle)\//,
+    "glb/without_logo/$2/"
+  );
 
   console.log("New src:", newSrc);
 
@@ -473,11 +480,10 @@ function togglePatternsSection() {
   console.log("Current category: ", currentCategory);
   console.log("selectCategoryFinal: ", selectCategoryFinal);
 
-  const channel = new BroadcastChannel('session-sync');
-  sessionStorage.setItem('model_type', selectCategoryFinal);  // Set sessionStorage in Tab 1
+  const channel = new BroadcastChannel("session-sync");
+  sessionStorage.setItem("model_type", selectCategoryFinal); // Set sessionStorage in Tab 1
   console.log("sent message");
-  channel.postMessage({ type: selectCategoryFinal }); 
-
+  channel.postMessage({ type: selectCategoryFinal });
 }
 
 // Update your existing selectCategory function
@@ -576,15 +582,14 @@ function init() {
 }
 
 async function downloadGLB() {
-   const modelViewer = document.querySelector("model-viewer");
-const glTF = await modelViewer.exportScene();
+  const modelViewer = document.querySelector("model-viewer");
+  const glTF = await modelViewer.exportScene();
   const file = new File([glTF], "export_model.glb");
   const link = document.createElement("a");
   link.download = file.name;
   link.href = URL.createObjectURL(file);
   link.click();
 }
-
 
 async function captureScreenshot() {
   const modelViewer = document.querySelector("model-viewer");
@@ -629,9 +634,6 @@ async function downloadPDF() {
   pdf.save(model.name + ".pdf");
 }
 
-
-
-
 // Pattern texture URLs
 const patternTextures = [
   "./50-ml/50ml-G.png",
@@ -663,7 +665,9 @@ async function applyPatternToModel() {
   const modelViewer = document.querySelector("model-viewer");
   if (!modelViewer) return;
   console.log("Current pattern texture: ", currentPatternTexture);
-  if (currentPatternTexture == null || currentPatternTexture == undefined) {return;}
+  if (currentPatternTexture == null || currentPatternTexture == undefined) {
+    return;
+  }
 
   // await modelViewer.model.updateComplete;
 
@@ -686,12 +690,32 @@ async function applyPatternToModel() {
   // Apply texture safely
   labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
 
+  labelMat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); // RGBA: white + 0 alpha
+
+  labelMat.setAlphaMode("OPAQUE");
+  labelMat.setAlphaCutoff(1);
+
+  const underTexture = "texture_under";
+
+  // Find the material by name
+  const targetMaterial = modelViewer.model.materials.find(
+    (material) => material.name === underTexture
+  );
+
+  if (targetMaterial) {
+    // Change the base color to a new value
+    targetMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+    targetMaterial.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+    targetMaterial.setAlphaMode("OPAQUE");
+    targetMaterial.setAlphaCutoff(1);
+  }
+
   // Force refresh
   modelViewer.requestUpdate();
 }
 
 async function applyNoFill() {
-   const modelViewer = document.querySelector("model-viewer");
+  const modelViewer = document.querySelector("model-viewer");
   if (!modelViewer) return;
 
   // Wait for model to be fully loaded
@@ -713,32 +737,28 @@ async function applyNoFill() {
 
   labelMat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 0]); // RGBA: white + 0 alpha
 
-  labelMat.alphaMode = 'BLEND';
-  
-  const labelUnderMat = materials.find((m) =>
-    m.name.toLowerCase().includes("texture_under")
-  );
+  labelMat.setAlphaMode("BLEND");
+  labelMat.setAlphaCutoff(0);
 
   console.log("All material names:");
-materials.forEach(m => console.log(m.name));
+  materials.forEach((m) => console.log(m.name));
+  const underTexture = "texture_under";
 
+  // Find the material by name
+  const targetMaterial = modelViewer.model.materials.find(
+    (material) => material.name === underTexture
+  );
 
-  if (!labelUnderMat) {
-    console.warn("⚠ No 'texture_under' material found");
-    return;
+  if (targetMaterial) {
+    // Change the base color to a new value
+    targetMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+    targetMaterial.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 0]);
+    targetMaterial.setAlphaMode("BLEND");
+    targetMaterial.setAlphaCutoff(0);
   }
-
-  labelUnderMat.pbrMetallicRoughness.baseColorTexture.setTexture(null);
-
-  labelUnderMat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 0]); // RGBA: white + 0 alpha
-
-  labelUnderMat.alphaMode = 'BLEND';
-
-  console.log("No fill is applied to the texture under material");
 
   // Force model-viewer to re-render
   modelViewer.requestUpdate();
-
 }
 
 // Function to apply texture to a specific mesh
@@ -803,21 +823,18 @@ function applyTextureToMesh(mesh) {
 // Updated selectModel function - REPLACE your existing one
 function selectModel(modelIndex) {
   selectedModel = modelIndex;
-  
+
   const model = categories[currentCategory].models[modelIndex];
-  
-  let camera_orbit = '';
+
+  let camera_orbit = "";
   if (model.type == "round" && modelIndex == 0) {
     camera_orbit = `camera-orbit="-1263deg 53.54deg 0.1261m"`;
-  }
-  else if (model.type == "rectangle" && modelIndex == 0) {
+  } else if (model.type == "rectangle" && modelIndex == 0) {
     camera_orbit = `camera-orbit="-1443deg 53.14deg 0.4303m"`;
-  }
-  else if (model.type == "sipper" && modelIndex == 0) {
+  } else if (model.type == "sipper" && modelIndex == 0) {
     camera_orbit = `camera-orbit="-1619deg 74.82deg 0.2274m"`;
-  }
-  else {
-    camera_orbit = ''
+  } else {
+    camera_orbit = "";
   }
 
   // Update selected model in grid
@@ -931,13 +948,16 @@ let currentPatternTexture = patternConfigs[0].textures[0];
 function updatePatternGrid() {
   const patternGrid = document.querySelector(".pattern-grid");
   const currentPatterns = patternConfigs[currentCategory].textures;
-  const customizeButton = document.getElementById('editCustomiseButton');
+  const customizeButton = document.getElementById("editCustomiseButton");
 
   // Clear existing patterns
   patternGrid.innerHTML = "";
 
-  const noFillImage = (currentCategory === 0) ? 'no_fill_circle.png' : 'no_fill_rectangle.png';
-  (currentCategory === 2) ? customizeButton.style.display = 'none' : customizeButton.style.display = 'unset';
+  const noFillImage =
+    currentCategory === 0 ? "no_fill_circle.png" : "no_fill_rectangle.png";
+  currentCategory === 2
+    ? (customizeButton.style.display = "none")
+    : (customizeButton.style.display = "unset");
   // Add patterns for current category
   currentPatterns.forEach((textureUrl, index) => {
     const patternItem = document.createElement("div");
@@ -951,7 +971,6 @@ function updatePatternGrid() {
       patternItem.style.width = "85px";
       patternItem.style.height = "55px";
     }
-
 
     patternItem.onclick = () => selectPattern(index);
 
@@ -970,19 +989,17 @@ function updatePatternGrid() {
   plainPattern.style.backgroundSize = "cover";
   plainPattern.style.backgroundRepeat = "repeat";
 
-   if (currentCategory === 1) {
+  if (currentCategory === 1) {
     plainPattern.style.width = "85px";
     plainPattern.style.height = "55px";
   }
   const plainIndex = currentPatterns.length;
 
-
   plainPattern.onclick = () => {
     selectPattern(plainIndex);
     setModelPlain();
-  }
+  };
   patternGrid.appendChild(plainPattern);
-
 }
 
 function setModelPlain() {
@@ -1050,17 +1067,34 @@ function init() {
 
 // upload logo function
 
-const uploadButton = document.getElementById('uploadLogoButton');
-const fileInput = document.getElementById('logoFileInput');
+const uploadButton = document.getElementById("uploadLogoButton");
+const fileInput = document.getElementById("logoFileInput");
 const modelViewerMain = document.querySelector("model-viewer");
 
 // Trigger file picker when button is clicked
-uploadButton.addEventListener('click', () => {
+uploadButton.addEventListener("click", () => {
   fileInput.click();
+  changeToLogoModel();
 });
 
+function changeToLogoModel() {
+  const modelViewer = document.querySelector("model-viewer");
+   const currentSrc = modelViewer.src;
+
+  if (!currentSrc.includes("without_logo")) return;
+
+  // Use regex to insert '/without_logo' before 'round/' or 'rectangle/'
+ const originalSrc = currentSrc.replace(/(glb\/)without_logo\//, "$1");
+
+
+  console.log("New src:", originalSrc);
+
+  // Apply the new source
+  modelViewer.src = originalSrc;
+}
+
 // When file is selected
-fileInput.addEventListener('change', async (event) => {
+fileInput.addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -1092,35 +1126,35 @@ async function applyLogo(logoImage) {
   if (!modelViewer) return;
 
   const size = 512;
-const canvas = document.createElement("canvas");
-canvas.width = size;
-canvas.height = size;
-const ctx = canvas.getContext("2d");
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
 
-// Optional: clear or fill background
-ctx.clearRect(0, 0, size, size);
-// ctx.fillStyle = "white"; // or any background color
-// ctx.fillRect(0, 0, size, size);
+  // Optional: clear or fill background
+  ctx.clearRect(0, 0, size, size);
+  // ctx.fillStyle = "white"; // or any background color
+  // ctx.fillRect(0, 0, size, size);
 
-// Calculate scaled dimensions preserving aspect ratio
-const imgWidth = logoImage.width;
-const imgHeight = logoImage.height;
+  // Calculate scaled dimensions preserving aspect ratio
+  const imgWidth = logoImage.width;
+  const imgHeight = logoImage.height;
 
-let drawWidth, drawHeight;
+  let drawWidth, drawHeight;
 
-if (imgWidth > imgHeight) {
-  drawWidth = size;
-  drawHeight = (imgHeight / imgWidth) * size;
-} else {
-  drawHeight = size;
-  drawWidth = (imgWidth / imgHeight) * size;
-}
+  if (imgWidth > imgHeight) {
+    drawWidth = size;
+    drawHeight = (imgHeight / imgWidth) * size;
+  } else {
+    drawHeight = size;
+    drawWidth = (imgWidth / imgHeight) * size;
+  }
 
-// Center the image on the canvas
-const offsetX = (size - drawWidth) / 2;
-const offsetY = (size - drawHeight) / 2;
+  // Center the image on the canvas
+  const offsetX = (size - drawWidth) / 2;
+  const offsetY = (size - drawHeight) / 2;
 
-ctx.drawImage(logoImage, offsetX, offsetY, drawWidth, drawHeight);
+  ctx.drawImage(logoImage, offsetX, offsetY, drawWidth, drawHeight);
 
   // Convert canvas to data URL instead of passing canvas directly
   const dataURL = canvas.toDataURL();
