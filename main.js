@@ -320,20 +320,14 @@ window.addEventListener("message", (event) => {
   const dataURL = event.data;
 
   if (typeof dataURL === "string" && dataURL.startsWith("data:image/png")) {
-    console.log("Received PNG image from editor");
-    console.log(`Here is the image url: \n ${dataURL}`);
+      
 
-    // Now use this dataURL as texture for your GLB model
-    // Example: apply it as texture
     applyTextureBase64(dataURL);
   }
 });
 
 async function applyTextureBase64(base64Image) {
-  // Wait until the model is loaded
-  // await modelViewer.whenLoaded();
-
-  // Get all materials of the model
+ 
  
   const modelViewer = document.getElementById("viewer");
 
@@ -378,6 +372,29 @@ async function applyTextureBase64(base64Image) {
     modelViewer.requestUpdate();
   });
 
+  // re trigger same for already loaded models
+  
+    const materials = modelViewer.model.materials;
+  
+    // Find the material named "texture_area" (case-insensitive search)
+    const labelMat = materials.find(m => m.name.toLowerCase().includes("texture_area"));
+  
+    if (!labelMat) {
+      console.warn("⚠ No 'texture_area' material found");
+      return;
+    }
+  
+    console.log("Applying pattern:", base64Image);
+  
+    // Use model-viewer's built-in texture loader
+    const tex = await modelViewer.createTexture(base64Image);
+  
+    // Apply the texture to the material's baseColorTexture
+    labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
+  
+    // Force a refresh for the changes to take effect
+    modelViewer.requestUpdate();
+
 }
 
 function switchModel(modelViewer) {
@@ -385,6 +402,8 @@ function switchModel(modelViewer) {
 
   const currentSrc = modelViewer.src;
   console.log("Current src:", currentSrc);
+
+  if (currentSrc.includes("without_logo")) return;
 
   // Use regex to insert '/without_logo' before 'round/' or 'rectangle/'
   const newSrc = currentSrc.replace(/(glb\/)(round|rectangle)\//, 'glb/without_logo/$2/');
