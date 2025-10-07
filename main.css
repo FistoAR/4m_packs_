@@ -4,7 +4,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-      font-family: "Inter", sans-serif;
+    font-family: "Inter", sans-serif;
 
 }
 
@@ -305,14 +305,14 @@ body {
 .zoom-control {
     /* Flexbox to align buttons horizontally */
     display: flex;
-    
+
     /* Pill shape achieved by high border-radius on a rectangular container */
-    border-radius: 30px; 
-    
+    border-radius: 30px;
+
     /* Aesthetics: Floating effect */
     background-color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
-    
+
     /* Optional: Centering the control on the screen (for demo) */
     position: absolute;
     bottom: 5%;
@@ -326,18 +326,19 @@ body {
     border: none;
     background: transparent;
     cursor: pointer;
-    
+
     /* Sizing and Spacing */
-    padding: 10px 14px; /* Adjust padding for desired size */
+    padding: 10px 14px;
+    /* Adjust padding for desired size */
     height: 44px;
     width: 44px;
-    
+
     /* Icon Color */
-    color: #444; 
-    
+    color: #444;
+
     /* Smooth Transitions for Hover Effects */
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    
+
     /* Ensure icon is centered */
     display: flex;
     align-items: center;
@@ -349,6 +350,7 @@ body {
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
 }
+
 .zoom-out {
     border-top-right-radius: 30px;
     border-bottom-right-radius: 30px;
@@ -357,14 +359,18 @@ body {
 /* Separator Line */
 .separator {
     width: 1px;
-    background-color: #ddd; /* Light gray line */
-    margin: 8px 0; /* Vertical spacing to keep it shorter than the button height */
+    background-color: #ddd;
+    /* Light gray line */
+    margin: 8px 0;
+    /* Vertical spacing to keep it shorter than the button height */
 }
 
 /* Interaction States (Hover) */
 .zoom-button:hover {
-    background-color: #f0f0f0; /* Subtle light gray on hover */
-    color: #000; /* Slightly darker icon color on hover */
+    background-color: #f0f0f0;
+    /* Subtle light gray on hover */
+    color: #000;
+    /* Slightly darker icon color on hover */
 }
 
 
@@ -566,15 +572,66 @@ body {
 }
 
 /* button animation */
-  .gradient-shift {
-            background: linear-gradient(45deg, #9e2828, #c2a1a1, #d35a5a, #ff2f2f);
-            background-size: 300% 300%;
-            color: white;
-            animation: gradientShift 3s ease infinite;
-        }
+.gradient-shift {
+    background: linear-gradient(45deg, #9e2828, #c2a1a1, #d35a5a, #ff2f2f);
+    background-size: 300% 300%;
+    color: white;
+    animation: gradientShift 3s ease infinite;
+}
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* background color change code */
+#colorBox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 150px;
+    font-family: Arial, sans-serif;
+}
+
+#colorBox label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+#colorBox span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.colorpick-eyedropper-input-trigger {
+    display: none;
+}
+
+#colorInput {
+    cursor: pointer;
+}
+
+#hexCode {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}

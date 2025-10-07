@@ -1079,13 +1079,12 @@ uploadButton.addEventListener("click", () => {
 
 function changeToLogoModel() {
   const modelViewer = document.querySelector("model-viewer");
-   const currentSrc = modelViewer.src;
+  const currentSrc = modelViewer.src;
 
   if (!currentSrc.includes("without_logo")) return;
 
   // Use regex to insert '/without_logo' before 'round/' or 'rectangle/'
- const originalSrc = currentSrc.replace(/(glb\/)without_logo\//, "$1");
-
+  const originalSrc = currentSrc.replace(/(glb\/)without_logo\//, "$1");
 
   console.log("New src:", originalSrc);
 
@@ -1183,3 +1182,14 @@ async function applyLogo(logoImage) {
 
   modelViewer.requestUpdate();
 }
+
+// background colour update code:
+const colorInput = document.getElementById("colorInput");
+const colorBox = document.querySelector(".model-viewer");
+const hexCodeDisplay = document.getElementById("hexCode");
+
+colorInput.addEventListener("input", () => {
+  const selectedColor = colorInput.value;
+  colorBox.style.backgroundColor = selectedColor;
+  hexCodeDisplay.textContent = `Hex code: ${selectedColor}`;
+});
