@@ -72,6 +72,7 @@ html {
         position: absolute;
         bottom: 5%;
         right: 2%;
+        z-index: 999;
     }
 @media screen and (max-width: 800px) {
     .navbar .nav-links {
@@ -2377,4 +2378,14 @@ textarea:focus {
 .alignment-icon.selected {
 
     border-radius: 3px;
+}
+
+.no_edit_option {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 3vw;
 }

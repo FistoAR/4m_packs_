@@ -72,42 +72,42 @@ const categories = [
       {
         name: "4MP-DC-120",
         capacity: "120ml  Dessert cup",
-        src: "./Model/120ml_dessert_cup.glb",
+        src: "./assets/glb/sipper/120ml_dessert_cup.glb",
         img: "./container_images/sipper_models/120_dessert_cup.webp",
         type: "sipper",
       },
       {
         name: "4MP-G-250",
         capacity: "250ml Glass",
-        src: "./Model/250ml_glass.glb",
+        src: "./assets/glb/sipper/250ml_glass.glb",
         img: "./container_images/sipper_models/250ml_glass.webp",
         type: "sipper",
       },
       {
         name: "4MP-SG-250",
         capacity: "250ml Sipper glass",
-        src: "./Model/250_Sipper_glass.glb",
+        src: "./assets/glb/sipper/250_Sipper_glass.glb",
         img: "./container_images/sipper_models/250ml_sipper_glass.webp",
         type: "sipper",
       },
       {
         name: "4MP-GF-250",
         capacity: "250ml Glass with flat lid",
-        src: "./Model/250_glasswith_flat_lid.glb",
+        src: "./assets/glb/sipper/250_glasswith_flat_lid.glb",
         img: "./container_images/sipper_models/250ml_glass_with_flat_lid.webp",
         type: "sipper",
       },
       {
         name: "4MP-G-350",
         capacity: "350ml Glass",
-        src: "./Model/350ml_glass.glb",
+        src: "./assets/glb/sipper/350ml_glass.glb",
         img: "./container_images/sipper_models/350ml_glass.webp",
         type: "sipper",
       },
       {
         name: "4MP-SG-350",
         capacity: "350ml Sipper glass",
-        src: "./Model/350_sipper_glass.glb",
+        src: "./assets/glb/sipper/350_sipper_glass.glb",
         img: "./container_images/sipper_models/350ml_sipper_glass.webp",
         type: "sipper",
       },
@@ -225,7 +225,7 @@ function selectPattern(patternIndex) {
 
 // Zoom functions
 function zoomIn() {
-  zoomLevel = Math.min(zoomLevel + 0.2, 3);
+  zoomLevel = Math.min(zoomLevel + 0.2, 1.3);
   updateZoom();
 }
 
@@ -308,6 +308,8 @@ function editModel() {
     selectCategoryFinal = "round";
   }
   sessionStorage.setItem("model_type", selectCategoryFinal);
+  const modelViewer = document.querySelector("model-viewer");
+  // switchModel(modelViewer);
   window.open("edit.html", "_blank");
 }
 
@@ -332,29 +334,66 @@ async function applyTextureBase64(base64Image) {
   // await modelViewer.whenLoaded();
 
   // Get all materials of the model
+ 
   const modelViewer = document.getElementById("viewer");
-  const materials = modelViewer.model.materials;
 
-  // Find the material named "texture_area" (case-insensitive search)
-  const labelMat = materials.find(m => m.name.toLowerCase().includes("texture_area"));
+ switchModel(modelViewer);
 
-  if (!labelMat) {
-    console.warn("⚠ No 'texture_area' material found");
-    return;
-  }
+  // Wait for update cycle
+  await modelViewer.updateComplete;
 
-  console.log("Applying pattern:", base64Image);
+  // Wait for the model to be fully loaded
+  await new Promise((resolve) => {
+    if (modelViewer.model) {
+      resolve();
+    } else {
+      modelViewer.addEventListener('load', () => {
+        
+        resolve();
+      }, { once: true });
+    }
+  });
 
-  // Use model-viewer's built-in texture loader
-  const tex = await modelViewer.createTexture(base64Image);
+  modelViewer.addEventListener('load', async () => {
 
-  // Apply the texture to the material's baseColorTexture
-  labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
+    const materials = modelViewer.model.materials;
+  
+    // Find the material named "texture_area" (case-insensitive search)
+    const labelMat = materials.find(m => m.name.toLowerCase().includes("texture_area"));
+  
+    if (!labelMat) {
+      console.warn("⚠ No 'texture_area' material found");
+      return;
+    }
+  
+    console.log("Applying pattern:", base64Image);
+  
+    // Use model-viewer's built-in texture loader
+    const tex = await modelViewer.createTexture(base64Image);
+  
+    // Apply the texture to the material's baseColorTexture
+    labelMat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
+  
+    // Force a refresh for the changes to take effect
+    modelViewer.requestUpdate();
+  });
 
-  // Force a refresh for the changes to take effect
-  modelViewer.requestUpdate();
 }
 
+function switchModel(modelViewer) {
+  console.log("Switching in progress");
+
+  const currentSrc = modelViewer.src;
+  console.log("Current src:", currentSrc);
+
+  // Use regex to insert '/without_logo' before 'round/' or 'rectangle/'
+  const newSrc = currentSrc.replace(/(glb\/)(round|rectangle)\//, 'glb/without_logo/$2/');
+
+  console.log("New src:", newSrc);
+
+  // Apply the new source
+  modelViewer.src = newSrc;
+}
 
 // GLB Import function
 function handleGLBImport(event) {
@@ -402,6 +441,24 @@ function togglePatternsSection() {
   } else {
     patternsSection.style.display = "block";
   }
+
+  let selectCategoryFinal;
+  if (currentCategory == 0) {
+    selectCategoryFinal = "round";
+  } else if (currentCategory == 1) {
+    selectCategoryFinal = "rectangle";
+  } else {
+    selectCategoryFinal = "sipper";
+  }
+
+  console.log("Current category: ", currentCategory);
+  console.log("selectCategoryFinal: ", selectCategoryFinal);
+
+  const channel = new BroadcastChannel('session-sync');
+  sessionStorage.setItem('model_type', selectCategoryFinal);  // Set sessionStorage in Tab 1
+  console.log("sent message");
+  channel.postMessage({ type: selectCategoryFinal }); 
+
 }
 
 // Update your existing selectCategory function
@@ -763,6 +820,8 @@ function selectModel(modelIndex) {
         style="width: 100%; height: 100%;"
         id="viewer" disable-tap disable-pan
         ${camera_orbit}
+        min-field-of-view="28deg"
+        max-field-of-view="30deg"
         >
     </model-viewer>`;
 

@@ -22,6 +22,8 @@ body {
     justify-content: space-between;
     padding: 0 27px;
     color: white;
+    position: relative;
+    z-index: 99;
 }
 
 /* .logo {
@@ -65,6 +67,8 @@ body {
     width: 25%;
     background: white;
     border-right: 1px solid #ddd;
+    position: relative;
+    z-index: 99;
     /* overflow-y: auto; */
 }
 
@@ -296,6 +300,74 @@ body {
     transform: scale(1.1);
 }
 
+
+/* new zoom code */
+.zoom-control {
+    /* Flexbox to align buttons horizontally */
+    display: flex;
+    
+    /* Pill shape achieved by high border-radius on a rectangular container */
+    border-radius: 30px; 
+    
+    /* Aesthetics: Floating effect */
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+    
+    /* Optional: Centering the control on the screen (for demo) */
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Styles for Individual Buttons */
+.zoom-button {
+    /* Remove default button appearance */
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    
+    /* Sizing and Spacing */
+    padding: 10px 14px; /* Adjust padding for desired size */
+    height: 44px;
+    width: 44px;
+    
+    /* Icon Color */
+    color: #444; 
+    
+    /* Smooth Transitions for Hover Effects */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    
+    /* Ensure icon is centered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Specific Border-Radius for the ends of the pill shape */
+.zoom-in {
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+.zoom-out {
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+/* Separator Line */
+.separator {
+    width: 1px;
+    background-color: #ddd; /* Light gray line */
+    margin: 8px 0; /* Vertical spacing to keep it shorter than the button height */
+}
+
+/* Interaction States (Hover) */
+.zoom-button:hover {
+    background-color: #f0f0f0; /* Subtle light gray on hover */
+    color: #000; /* Slightly darker icon color on hover */
+}
+
+
 .patterns-section {
     position: absolute;
     top: 0;
@@ -492,3 +564,17 @@ body {
     font-weight: bold;
     width: 90%;
 }
+
+/* button animation */
+  .gradient-shift {
+            background: linear-gradient(45deg, #9e2828, #c2a1a1, #d35a5a, #ff2f2f);
+            background-size: 300% 300%;
+            color: white;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }

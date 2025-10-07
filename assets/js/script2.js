@@ -19,12 +19,43 @@ function clearCanvas() {
 }
 
 // sessionStorage.setItem("model_type", "rectangle");
-const chosenModel = sessionStorage.getItem("model_type") ? sessionStorage.getItem("model_type") : 'round';
 
+const chosenModel = sessionStorage.getItem("model_type") ? sessionStorage.getItem("model_type") : 'sipper';
+
+const channel = new BroadcastChannel('session-sync');
+
+ channel.onmessage = (event) => {
+  if (event.data.type) {
+    console.log("received message");
+    // const chosenModel = sessionStorage.getItem("model_type") ? sessionStorage.getItem("model_type") : 'sipper';
+    // console.log("Chosen mode: ", chosenModel);
+    // console.log("Event type: ", event.data.type);
+    sessionStorage.setItem('model_type', event.data.type); 
+    // setSelectedModelContent();
+    window.location.reload();
+    window.location.reload();
+  }
+};
+
+document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') {
+      location.reload();
+    }
+  });
+
+const templateContainer = document.getElementById('template-container');
+
+setSelectedModelContent(chosenModel)
+
+function setSelectedModelContent(chosenModel) {
+  if (chosenModel == 'sipper') {
+    document.body.innerHTML = `<div class="no_edit_option">Customize feature not available for Sipper Containers</div>`;
+  }
 setBackgroundImage(`./assets/images/images/default_${chosenModel}.png`, false);
 // setBackgroundImage("/assets/images/images/default_round.png", false);
-const templateContainer = document.getElementById('template-container');
 createTemplates(chosenModel);
+}
+
 
 function createTemplates(chosenModel) {
     templateContainer.innerHTML = `
@@ -1232,16 +1263,17 @@ function uploadLogo(src, maxWidth = 175, maxHeight = 175) {
         const existingLogo = canvas
           .getObjects()
           .find((obj) => obj.className === "logo");
-
-        if (existingLogo) {
-          // If the logo already exists, update its source image
-          fabric.Image.fromURL(base64Image, function (img) {
-            // Calculate the scale based on maxWidth and maxHeight while preserving aspect ratio
-            const imgWidth = img.width;
-            const imgHeight = img.height;
-
-            let scaleX = 1;
-            let scaleY = 1;
+          
+          if (existingLogo) {
+            // If the logo already exists, update its source image
+            fabric.Image.fromURL(base64Image, function (img) {
+              // Calculate the scale based on maxWidth and maxHeight while preserving aspect ratio
+              const imgWidth = img.width;
+              const imgHeight = img.height;
+              
+              let scaleX = 1;
+              let scaleY = 1;
+            
 
             if (imgWidth > maxWidth || imgHeight > maxHeight) {
               const widthRatio = maxWidth / imgWidth;
@@ -1250,11 +1282,12 @@ function uploadLogo(src, maxWidth = 175, maxHeight = 175) {
 
               scaleX = scaleY = scaleRatio;
             }
-
+  const leftPos = (canvas.width - img.width * scaleX) / 2;
+              console.log(`Left position update: ${leftPos}`);
             // Update the existing logo's image source
             existingLogo.setElement(img.getElement());
             existingLogo.set({
-              left: 55, // Set default position (can be updated)
+              left: leftPos, // Set default position (can be updated)
               top: 45, // Set default position (can be updated)
               scaleX: scaleX, // Adjusted scale
               scaleY: scaleY, // Adjusted scale
@@ -1269,9 +1302,11 @@ function uploadLogo(src, maxWidth = 175, maxHeight = 175) {
             // Calculate the scale based on maxWidth and maxHeight while preserving aspect ratio
             const imgWidth = img.width;
             const imgHeight = img.height;
-
+            
             let scaleX = 1;
             let scaleY = 1;
+            const leftPos = (canvas.width - img.width * scaleX) / 2;
+            console.log(`Left position: ${leftPos}`);
 
             if (imgWidth > maxWidth || imgHeight > maxHeight) {
               const widthRatio = maxWidth / imgWidth;
@@ -1282,7 +1317,7 @@ function uploadLogo(src, maxWidth = 175, maxHeight = 175) {
             }
 
             img.set({
-              left: 55,
+              left: leftPos,
               top: 45,
               scaleX: scaleX, // Adjusted scale
               scaleY: scaleY, // Adjusted scale
@@ -3874,7 +3909,7 @@ function addTemplateItemsWithCustomText(theme) {
         100
       );
       addText("Your Company Name", "#000000ff", 60, 100, 16);
-      addCustomText("Your Custom Text", "#000000ff", 16); // Add custom text
+      // addCustomText("Your Custom Text", "#000000ff", 16); // Add custom text
       addAddressText("Your Address Here", "#070707ff", 55, 580, 18);
       break;
     case "white":
@@ -3887,7 +3922,7 @@ function addTemplateItemsWithCustomText(theme) {
         100
       );
       addText("Your Company Name", "#FFFFFF", 60, 100, 16);
-      addCustomText("Your Custom Text", "#FFFFFF", 16);
+      // addCustomText("Your Custom Text", "#FFFFFF", 16);
       addAddressText("Your Address Here", "#FFFFFF", 55, 580, 18);
       break;
 
@@ -3902,7 +3937,7 @@ function addTemplateItemsWithCustomText(theme) {
         100
       );
       addText("Your Company Name", "#FFFFFF", 60, 100, 16);
-      addCustomText("Your Custom Text", "#FFFFFF", 16);
+      // addCustomText("Your Custom Text", "#FFFFFF", 16);
       addAddressText("Your Address Here", "#FFFFFF", 55, 580, 18);
       break;
   }
@@ -4402,9 +4437,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // ============ INITIALIZE CUSTOM TEXT - THIS MUST BE LAST ============
-  console.log("Initializing custom text...");
-  addCustomText("Your Custom Text", "#000000ff", 16);
-  console.log("Custom text initialized");
+  // console.log("Initializing custom text...");
+  // addCustomText("Your Custom Text", "#000000ff", 16);
+  // console.log("Custom text initialized");
 });
 
 const saveButton = document.getElementById("save-button");
